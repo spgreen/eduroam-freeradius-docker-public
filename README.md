@@ -18,25 +18,6 @@ Based off lrhazi's freeradius-eduroam docker setup found [here](https://github.c
 
 #####Files have been edited to follow GÉANT's Technical documentation for eduroam Identity Providers (IdPs)
 
-######Configuration files that have been edited in /etc/raddb/:  
-
-    proxy.conf
-    clients.conf 
-    radiusd.conf
-    mods-config/files/authrorize   #new location for /etc/raddb/users 
-    mods-available/eap
-    mods-config/attr_filter/pre-proxy
-                                                            
-######Configuration files that have been created for eduroam:    
- 
-    sites-enabled/eduroam  
-    sites-enabled/eduroam-inner-tunnel
-
-
-######You can view just the edited files in their appropriate directories here : 
-
-    files/edited_raddb_config/
-    
 #####Script files: 
 
     build_eduroamFreeRADIUS.sh          # rebuilds freeradius-eduroam Docker image files. Edit configuration 
@@ -64,9 +45,6 @@ A machine running Docker:
 * [Other OS Installation Guide](https://docs.docker.com/v1.8/installation/)
 	
                    
-                    
-
-
 ###Setting Up and Running your eduroam IdP FreeRADIUS Server:
 
 ####Initial Setup:
@@ -202,84 +180,4 @@ Note: The container will still be running in the background
    
    		># docker start freeradius-eduroam
             
-            
-            
 ___
-            
-###Adding Extra Configurations to your FreeRADIUS eduroam Container
-
-1) Edit files in the following directory to customise your FreeRADIUS eduroam IdP Server:
-        
-		files/environment/etc/raddb/
-  
-The original files can be found here:	
-
-		files/etc.ORIGINAL/raddb/    
-
-2) Save the edited file(s) and run the build_eduroamFreeRADIUS.sh to rebuild the FreeRADIUS Docker image with your newly added configurations.
-
-	># ./build_eduroamFreeRADIUS.sh
-
-3) Run  restart_eduroamFreeRADIUS.sh  to start the Docker container using your newly built Docker image.
-
-	># ./restart_eduroamFreeRADIUS.sh
-
-
-Note: If the Docker container fails to start, the added configuration is not valid
-
-4) You have now successfully added configuration to the eduroam FreeRADIUS Docker image and subsequently created a container from it.
-
-
-#####Example
-Let's say that you need to add a couple of Access Point configurations to clients.conf for your eduroam infrastructure. 
-
-This process can be easily completed with the following steps:
-
-1) Edit clients.conf found within files/environment/etc/raddb/clients.conf in the GitHub Package/cloned directory.
-
-	$ vi files/environment/etc/raddb/clients.conf
-
-2) Add the client definition at the bottom of the file and at least a line after the FLR2 client definition. Otherwise the restart script may cause unnecessary commenting when running restart_eduroamFreeRADIUS.sh with NO_OF_FLR_SERVERS=1.
-
-**IMPORTANT:** Place extra client definitions under the client FLR2 definition!
-
-**EXTRA IMPORTANT: DO NOT** remove the client FLR2 definition even if you are only running one FLR!
-
-
-	client FLR2 {
-		ipaddr		= EDUROAM_FLR2
-	        secret          = FLR_EDUROAM_SECRET
-	        shortname       = FLR2
-	        nas_type        = other
-	    	virtual_server = eduroam
-		}
-		
-	client <AP IP address> {
-		secret = <somesecret>
-		shortname = <descriptive name>
-		nastype = other
-		}
-
-Save and exit. 
-
-3) Run build_eduroamFreeRADIUS.sh to rebuild the FreeRADIUS Docker image with your newly added configurations.
-	
-	># ./build_eduroamFreeRADIUS.sh
-
-4) Run  restart_eduroamFreeRADIUS.sh  to start the Docker container using your newly built Docker image.
-
-	># ./restart_eduroamFreeRADIUS.sh
-
-Note: If the Docker container does not start, the added configuration is not valid
-
-	
-        
-
-
-
-
- 
-  
-
-    
-   
